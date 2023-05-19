@@ -12,6 +12,16 @@ def getValidMoves (state):
             result.append(i)
     return result 
 
+def play (state, column,player):
+    flag = False
+    for r in range(rows):
+        if(state [r][column]!= EMPTY):
+            state [r-1][column] = player
+            flag = True
+            break
+    if(not flag):
+        state[rows - 1][column] = player
+        
 def isWinner(GameBoard,player): 
     for j in range(cols-3):#horizontal
         for i in range (rows):
