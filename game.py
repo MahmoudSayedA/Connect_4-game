@@ -66,50 +66,92 @@ def willWin(GameBoard,player):
 def isLeaf(state):
     return isWinner(state,AI) or isWinner(state, COMPUTER) or (len(getValidMoves(state)) ==0)
 
-def evalFunction(state, player):
-    inRows =[0]*rows
-    inCols = [0]*cols
-    inDiag =[0]*2
-    for i in range(rows):
-        for j in range (cols):
-            if state[i][j] ==player :
-                inRows[i] +=1
-                inCols[j]+=1
-                if (i == j):
-                    inDiag[0] +=1
-                elif ((i+j)==6):
-                    inDiag[1]+=1 
-    score =0
-    for x in range(rows):
-        if(inRows[x] == 4):
-            score += 100
-        elif(inRows[x]==3):
-            score += 30 
-        else:
-            score += inRows[x]      
-
-    for x in range(cols):
-        if (x ==3):
-            score += 80
-        elif(inCols[x]==4):
-            score += 100
-        elif(inCols[x]==3):
-            score += 30
-        else:
-            score += inCols[x]   
-
-    for x in range(2):
-        if(inDiag[x]==4):
-            score += 100
-        elif(inDiag[x]==3):
-            score += 30 
-        else:
-            score += inDiag[x]
-    if player == AI:
-        score + willWin(state,COMPUTER)
+def get_opponent(player):
+    if(player ==AI):
+        return COMPUTER
     else:
-        score + willWin(state,AI)
-    return score         
+        return AI
+
+def evalFunction(board, player):
+    score = 0
+    
+    # Check horizontal sequences of length 4
+    for row in range(6):
+        for col in range(4):
+            seq = board[row][col:col+4]
+            if seq.count(player) == 4:
+                score += 10000
+            elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
+                score += 100
+            elif seq.count(player) == 2 and seq.count(EMPTY) == 2:
+                score += 10
+            elif seq.count(player) == 1 and seq.count(EMPTY) == 3:
+                score += 1
+            elif seq.count(get_opponent(player)) == 3 and seq.count(EMPTY) == 1:
+                score -= 100
+            elif seq.count(get_opponent(player)) == 2 and seq.count(EMPTY) == 2:
+                score -= 10
+            elif seq.count(get_opponent(player)) == 1 and seq.count(EMPTY) == 3:
+                score -= 1
+    
+    # Check vertical sequences of length 4
+    for row in range(3):
+        for col in range(7):
+            seq = [board[row+i][col] for i in range(4)]
+            if seq.count(player) == 4:
+                score += 10000
+            elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
+                score += 100
+            elif seq.count(player) == 2 and seq.count(EMPTY) == 2:
+                score += 10
+            elif seq.count(player) == 1 and seq.count(EMPTY) == 3:
+                score += 1
+            elif seq.count(get_opponent(player)) == 3 and seq.count(EMPTY) == 1:
+                score -= 100
+            elif seq.count(get_opponent(player)) == 2 and seq.count(EMPTY) == 2:
+                score -= 10
+            elif seq.count(get_opponent(player)) == 1 and seq.count(EMPTY) == 3:
+                score -= 1
+                
+    # Check diagonal sequences of length 4 (top-left to bottom-right)
+    for row in range(3):
+        for col in range(4):
+            seq = [board[row+i][col+i] for i in range(4)]
+            if seq.count(player) == 4:
+                score += 10000
+            elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
+                score += 100
+            elif seq.count(player) == 2 and seq.count(EMPTY) == 2:
+                score += 10
+            elif seq.count(player) == 1 and seq.count(EMPTY) == 3:
+                score += 1
+            elif seq.count(get_opponent(player)) == 3 and seq.count(EMPTY) == 1:
+                score -= 100
+            elif seq.count(get_opponent(player)) == 2 and seq.count(EMPTY) == 2:
+                score -= 10
+            elif seq.count(get_opponent(player)) == 1 and seq.count(EMPTY) == 3:
+                score -= 1
+    
+    # Check diagonal sequences of length 4 (bottom-left to top-right)
+    for row in range(3, 6):
+        for col in range(4):
+            seq = [board[row-i][col+i] for i in range(4)]
+            if seq.count(player) == 4:
+                score += 10000
+            elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
+                score += 100
+            elif seq.count(player) == 2 and seq.count(EMPTY) == 2:
+                score += 10
+            elif seq.count(player) == 1 and seq.count(EMPTY) == 3:
+                score += 1
+            elif seq.count(get_opponent(player)) == 3 and seq.count(EMPTY) == 1:
+                score -= 100
+            elif seq.count(get_opponent(player)) == 2 and seq.count(EMPTY) == 2:
+                score -= 10
+            elif seq.count(get_opponent(player)) == 1 and seq.count(EMPTY) == 3:
+                score -= 1
+    
+    return score
 
 def play (state, column,player):
     flag = False
