@@ -12,6 +12,26 @@ def getValidMoves (state):
             result.append(i)
     return result 
 
+def isWinner(GameBoard,player): 
+    for j in range(cols-3):#horizontal
+        for i in range (rows):
+            if GameBoard[i][j]== player and GameBoard[i][j+1]== player and GameBoard[i][j+2]==player and GameBoard[i][j+3]==player:
+                return True
+    for j in range(cols): #vertical
+        for i in range (rows-3): 
+            if GameBoard[i][j]== player and GameBoard[i+1][j]== player and GameBoard[i+2][j]==player and GameBoard[i+3][j]==player:
+                return True
+            
+    for j in range(cols-3): #top left
+        for i in range (rows-3): 
+            if GameBoard[i][j]== player and GameBoard[i+1][j+1]== player and GameBoard[i+2][j+2]==player and GameBoard[i+3][j+3]==player:
+                return True
+            
+    for j in range(cols-3):  #top right
+        for i in range (3,rows):
+            if GameBoard[i][j]== player and GameBoard[i-1][j+1]== player and GameBoard[i-2][j+2]==player and GameBoard[i-3][j+3]==player:
+                return True 
+
 def willWin(GameBoard,player):
     for j in range(cols-2):#horizontal
         for i in range (rows):
