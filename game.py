@@ -5,6 +5,13 @@ import random
 # GAME LINK
 # http://kevinshannon.com/connect4/
 
+def getValidMoves (state):
+    result =[]
+    for i in range(cols):
+        if state[0][i] == EMPTY:
+            result.append(i)
+    return result 
+
 def willWin(GameBoard,player):
     for j in range(cols-2):#horizontal
         for i in range (rows):
