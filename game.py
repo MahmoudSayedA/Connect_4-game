@@ -25,8 +25,52 @@ def willWin(GameBoard,player):
         for i in range (2,rows):
             if GameBoard[i][j]== player and GameBoard[i-1][j+1]== player and GameBoard[i-2][j+2]==player :
                 return -500
-    return 0        
+    return 0  
 
+def evalFunction(state, player):
+    inRows =[0]*rows
+    inCols = [0]*cols
+    inDiag =[0]*2
+    for i in range(rows):
+        for j in range (cols):
+            if state[i][j] ==player :
+                inRows[i] +=1
+                inCols[j]+=1
+                if (i == j):
+                    inDiag[0] +=1
+                elif ((i+j)==6):
+                    inDiag[1]+=1 
+    score =0
+    for x in range(rows):
+        if(inRows[x] == 4):
+            score += 100
+        elif(inRows[x]==3):
+            score += 30 
+        else:
+            score += inRows[x]      
+
+    for x in range(cols):
+        if (x ==3):
+            score += 80
+        elif(inCols[x]==4):
+            score += 100
+        elif(inCols[x]==3):
+            score += 30 
+        else:
+            score += inCols[x]   
+
+    for x in range(2):
+        if(inDiag[x]==4):
+            score += 100
+        elif(inDiag[x]==3):
+            score += 30 
+        else:
+            score += inDiag[x]
+    if player == AI:
+        score + willWin(state,COMPUTER)
+    else:
+        score + willWin(state,AI)
+    return score 
 
 def main():
     board = Board()
