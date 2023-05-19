@@ -2,9 +2,9 @@ from PIL import ImageGrab
 import pyautogui
 
 # YOU MAY NEED TO CHANGE THESE VALUES BASED ON YOUR SCREEN SIZE
-LEFT = 417
-TOP = 195
-RIGHT = 950
+LEFT = 760
+TOP = 203
+RIGHT = 1282
 BOTTOM = 650
 
 EMPTY = 0
@@ -41,8 +41,8 @@ class Board:
     def _get_grid_cordinates(self):
         startCord = (37,37)
         cordArr = []
-        for j in range(0, 7):
-            for i in range(0, 6):
+        for i in range(0, 7):
+            for j in range(0, 6):
                 x = startCord[0] + i * 78
                 y = startCord[1] + j * 77
                 cordArr.append((x,y))
@@ -54,7 +54,7 @@ class Board:
     def _capture_image(self):
         image = ImageGrab.grab()
         cropedImage = image.crop((LEFT, TOP, RIGHT, BOTTOM))
-        # cropedImage.save('image5.png')
+        cropedImage.save('image5.png')
         return cropedImage
 
     def _convert_image_to_grid(self, image):
