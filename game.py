@@ -14,6 +14,7 @@ EMPTY = 0
 AI = 1 #R
 COMPUTER = 2 #B
 
+#return list of columns numbers that has empty place to play in
 def getValidMoves (state):
     result =[]
     for i in range(cols):
@@ -21,6 +22,7 @@ def getValidMoves (state):
             result.append(i)
     return result 
 
+#check if the given player won
 def isWinner(GameBoard,player): 
     for j in range(cols-3):#horizontal
         for i in range (rows):
@@ -40,46 +42,27 @@ def isWinner(GameBoard,player):
         for i in range (3,rows):
             if GameBoard[i][j]== player and GameBoard[i-1][j+1]== player and GameBoard[i-2][j+2]==player and GameBoard[i-3][j+3]==player:
                 return True 
-
-def willWin(GameBoard,player):
-    for j in range(cols-2):#horizontal
-        for i in range (rows):
-            if GameBoard[i][j]== player and GameBoard[i][j+1]== player and GameBoard[i][j+2]==player:
-                return -100
             
-    for j in range(cols): #vertical
-        for i in range (rows-2): 
-            if GameBoard[i][j]== player and GameBoard[i+1][j]== player and GameBoard[i+2][j]==player:
-                return -500
-            
-    for j in range(cols-2): #top left
-        for i in range (rows-2): 
-            if GameBoard[i][j]== player and GameBoard[i+1][j+1]== player and GameBoard[i+2][j+2]==player:
-                return -500
-            
-    for j in range(cols-2):  #top right
-        for i in range (2,rows):
-            if GameBoard[i][j]== player and GameBoard[i-1][j+1]== player and GameBoard[i-2][j+2]==player :
-                return -500
-    return 0        
-
+#check if the state has no children or not
 def isLeaf(state):
     return isWinner(state,AI) or isWinner(state, COMPUTER) or (len(getValidMoves(state)) ==0)
+
 
 def get_opponent(player):
     if(player ==AI):
         return COMPUTER
     else:
         return AI
-
+    
+#to evaluate states when depth = 0
 def evalFunction(board, player):
     score = 0
     
     # Check horizontal sequences of length 4
     for row in range(6):
         for col in range(4):
-            seq = board[row][col:col+4]
-            if seq.count(player) == 4:
+            seq = board[row][col:col+4] #create list seq, contains the elements from the specified row and col position, and ending at the position col+4
+            if seq.count(player) == 4:  
                 score += 10000
             elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
                 score += 100
@@ -97,7 +80,7 @@ def evalFunction(board, player):
     # Check vertical sequences of length 4
     for row in range(3):
         for col in range(7):
-            seq = [board[row+i][col] for i in range(4)]
+            seq = [board[row+i][col] for i in range(4)] # create list seq contains the elements from the specified row and col position, and ending at the position col+4.
             if seq.count(player) == 4:
                 score += 10000
             elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
@@ -116,7 +99,7 @@ def evalFunction(board, player):
     # Check diagonal sequences of length 4 (top-left to bottom-right)
     for row in range(3):
         for col in range(4):
-            seq = [board[row+i][col+i] for i in range(4)]
+            seq = [board[row+i][col+i] for i in range(4)] #create list seq contains the elements from the specified row and col position, and ending at the position row+4 , col+4
             if seq.count(player) == 4:
                 score += 10000
             elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
@@ -135,7 +118,7 @@ def evalFunction(board, player):
     # Check diagonal sequences of length 4 (bottom-left to top-right)
     for row in range(3, 6):
         for col in range(4):
-            seq = [board[row-i][col+i] for i in range(4)]
+            seq = [board[row-i][col+i] for i in range(4)] #create list seq contains the elements from the specified row and col position, and ending at the position row-4 , col+4.
             if seq.count(player) == 4:
                 score += 10000
             elif seq.count(player) == 3 and seq.count(EMPTY) == 1:
@@ -153,6 +136,7 @@ def evalFunction(board, player):
     
     return score
 
+#perform a play in specfic column by finding the first non empty row and play in the row above it directly
 def play (state, column,player):
     flag = False
     for r in range(rows):
@@ -160,8 +144,8 @@ def play (state, column,player):
             state [r-1][column] = player
             flag = True
             break
-    if(not flag):
-        state[rows - 1][column] = player
+    if(not flag): # the column is empty so play in the last row
+        state[rows - 1][column] = player 
 
 def minimax (state, player, depth, alpha , beta):
     valid_moves =getValidMoves(state) #get list of columns numbers which can play in  
@@ -176,12 +160,11 @@ def minimax (state, player, depth, alpha , beta):
     elif (depth ==0): #base case
         return None , evalFunction(state , AI)
     
-    if(player == AI): #recursive call mamimize player
+    if(player == AI): #recursive call maximize player
         score = math.inf*-1
         toPlay = random.choice(valid_moves)
         for column in valid_moves:
             nextState = copy.deepcopy(state)
-            # nextState = state.copy()
             play(nextState,column,player)
             newScore = minimax(nextState,COMPUTER,depth-1,alpha,beta)[1]
             if newScore > score:
@@ -192,12 +175,11 @@ def minimax (state, player, depth, alpha , beta):
                 break
         return toPlay , score
         
-    if(player == COMPUTER):
+    if(player == COMPUTER): #minimize player
         score = math.inf
         toPlay = random.choice(valid_moves)
         for column in valid_moves:
             nextState = copy.deepcopy(state)
-            # nextState = state.copy()
             play(nextState,column,player)
             newScore=minimax(nextState,AI,depth-1,alpha,beta)[1]
             if newScore < score:
@@ -228,13 +210,11 @@ def main():
         
         # Insert here the action you want to perform based on the output of the algorithm
         # You can use the following function to select a column
-        #random_column = random.randint(0, 6)
-        #random_column = 6
         
-        # board.select_column(random_column)
+        board.select_column(random_column)
         
         board.print_grid(game_board)
-        print("000000000000000000000000000000000000000000000000000000000000000000000000000")  
+        print("#####################################################################")  
         
         time.sleep(2)
 
